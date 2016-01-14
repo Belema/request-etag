@@ -23,7 +23,7 @@ More details can be found on the cache configuration options on the lru-cache [n
 	var ETagRequest = require('request-etag');
 	var eTagRequest = new ETagRequest(cacheConfig);
 
-The `ETagRequest` constructor takes a second optional argument which specifies the underlying HTTP request client to use. It defaults to [request](https://www.npmjs.com/package/request), so the above constuctor call can also be read,
+The `ETagRequest` constructor takes a second optional argument which specifies the underlying HTTP request client to use. It defaults to [request](https://www.npmjs.com/package/request), so the above constuctor call is equivalent to,
 
 	var eTagRequest = new ETagRequest(cacheConfig, require('request'));
 
