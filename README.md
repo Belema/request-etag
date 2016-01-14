@@ -15,7 +15,7 @@ Configuration,
 
 	var cacheConfig = {
 		max: 10 * 1024 * 1024,
-		lenght: function (v, k) { return v.length. k.length; }
+		length: function (v, k) { return v.length + k.length; }
 	};
 
 More details can be found on the cache configuration options on the lru-cache [npm webpage](https://www.npmjs.com/package/lru-cache).
