@@ -1,7 +1,7 @@
 {
   "name": "request-etag",
-  "version": "1.1.1",
-  "description": "Small, ETags-based, HTTP-response-caching module",
+  "version": "1.1.2",
+  "description": "Small, ETag-based, HTTP-response-caching module",
   "main": "lib/request-etag.js",
   "scripts": {
     "lint": "jshint ./ --exclude ./node_modules",
