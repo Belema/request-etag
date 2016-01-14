@@ -1,7 +1,7 @@
 request-etag [![Build Status](https://travis-ci.org/Belema/request-etag.svg?branch=master)](https://travis-ci.org/Belema/request-etag)
 ===========
 
-Small in-memory, ETags-based, HTTP response caching module. It is based on the two following popular NPM packages,
+Small in-memory, ETags-based, HTTP-response-caching module. It is based on the two following popular NPM packages,
 
 - [request](https://www.npmjs.com/package/request): a simplified HTTP request client.
 - [lru-cache](https://www.npmjs.com/package/lru-cache): a cache object that deletes the least-recently-used items.
@@ -21,7 +21,7 @@ Configuration,
 More details can be found on the cache configuration options on the lru-cache [npm webpage](https://www.npmjs.com/package/lru-cache).
 
 	var ETagRequest = require('request-etag');
-	var eTagRequest = ETagRequest(cacheConfig);
+	var eTagRequest = new ETagRequest(cacheConfig);
 
 The first call GET request will be sent without `If-None-Match` header. The response will contain a body.
 
