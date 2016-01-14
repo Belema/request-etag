@@ -1,7 +1,7 @@
 request-etag [![Build Status](https://travis-ci.org/Belema/request-etag.svg?branch=master)](https://travis-ci.org/Belema/request-etag)
 ===========
 
-Small, in-memory, ETags-based, HTTP-response-caching module. It is based on the two following popular NPM packages,
+Small, in-memory, ETag-based, HTTP-response-caching module. It is based on the two following popular NPM packages,
 
 - [request](https://www.npmjs.com/package/request): a simplified HTTP request client.
 - [lru-cache](https://www.npmjs.com/package/lru-cache): a cache object that deletes the least-recently-used items.
