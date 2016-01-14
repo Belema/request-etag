@@ -1,0 +1,14 @@
+# Git configuration
+.gitignore
+
+# JSCS configuration
+.jscsrc
+
+# JSHint configuration
+.jshintrc
+
+# npm configuration
+.npmignore
+
+# Travis configuration
+.travis.yml

@@ -1,0 +1,17 @@
+{
+  "bitwise": true,
+  "curly": true,
+  "eqeqeq": true,
+  "indent": 2,
+  "newcap": true,
+  "noarg": true,
+  "node": true,
+  "undef": true,
+  "unused": true,
+  "globals": {
+    "beforeEach": true,
+    "describe": true,
+    "it": true,
+    "should": true
+  }
+}
