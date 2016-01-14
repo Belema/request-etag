@@ -2,7 +2,7 @@
 
 var http = require('http');
 var etagValue = '686897696a7c876b7e';
-var server = new http.Server()
+var server = new http.Server();
 server.on('request', function (request, response) {
   var etagRequest = request.headers['if-none-match'];
   if (etagRequest === etagValue) {
