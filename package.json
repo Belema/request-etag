@@ -1,7 +1,7 @@
 {
   "name": "request-etag",
   "version": "1.0.0",
-  "description": "0.0.1",
+  "description": "Custom hash generator (based on MD5 algorithm)",
   "main": "lib/request-etag.js",
   "scripts": {
     "lint": "jshint ./ --exclude ./node_modules",
