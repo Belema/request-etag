@@ -3,8 +3,8 @@ request-etag [![Build Status](https://travis-ci.org/Belema/request-etag.svg?bran
 
 Small, in-memory, ETag-based, HTTP-response-caching module. It is based on the two following popular NPM packages,
 
-- [request](https://www.npmjs.com/package/request): a simplified HTTP request client.
 - [lru-cache](https://www.npmjs.com/package/lru-cache): a cache object that deletes the least-recently-used items.
+- [request](https://www.npmjs.com/package/request): a simplified HTTP request client. This is use by default, but can be overreplace in the `request-etag` constructor.
 
 Request-etag currently only supports GET requests.
 
@@ -23,7 +23,11 @@ More details can be found on the cache configuration options on the lru-cache [n
 	var ETagRequest = require('request-etag');
 	var eTagRequest = new ETagRequest(cacheConfig);
 
-The first call GET request will be sent without `If-None-Match` header. The response will contain a body.
+The `ETagRequest` constructor takes a second optional argument which specifies the underlying HTTP request client to use. It defaults to [request](https://www.npmjs.com/package/request), so the above constuctor call can also be read,
+
+	var eTagRequest = new ETagRequest(cacheConfig, require('request'));
+
+The first call GET request will be sent without an `If-None-Match` header, and its response will contain a body.
 
 	eTagRequest.get('www.immutablepage.com', function (error, response, body) {
 		if (!error && response.statusCode === 200) {
@@ -36,7 +40,7 @@ The first call GET request will be sent without `If-None-Match` header. The resp
 		}
 	});
 
-Subsequent GET requests to the same URL will be sent with an `If-None-Match` header. The response code will be 304, and will not contain a response body, but the body will be restored from the cache.
+Subsequent GET requests to the same URL will be sent with an `If-None-Match` header. The response code will be 304, and the response will not contain a body. However a body will be passed by the cache to the `body` parameter of the callback function.
 
 
 Why is my request not cached?
