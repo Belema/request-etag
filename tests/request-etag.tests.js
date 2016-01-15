@@ -157,6 +157,52 @@ describe('request-etag', function () {
           });
         });
       });
+
+      it('should not cache requests with cookie headers', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
+
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', { headers: { cookie: 'my-cookie' } }, function () {
+          dummyBody = 'New body';
+          dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
+
+          request.get('www.wikipedia.org', { headers: { cookie: 'my-cookie' } }, function () {
+            (headersIfNoneMatch === undefined).should.be.true();
+            done();
+          });
+        });
+      });
+
+      it('should cache requests with empty cookie headers', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
+
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', { headers: { cookie: '' } }, function () {
+          dummyBody = 'New body';
+          dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
+
+          request.get('www.wikipedia.org', { headers: { cookie: '' } }, function () {
+            headersIfNoneMatch.should.equal('etag1');
+            done();
+          });
+        });
+      });
     });
 
     describe('reset', function () {
