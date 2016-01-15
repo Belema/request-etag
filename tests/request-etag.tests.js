@@ -62,7 +62,10 @@ describe('request-etag', function () {
         var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
 
         var headersIfNoneMatch;
-        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
 
         var request = new Request({}, { get: getStub });
 
@@ -77,7 +80,10 @@ describe('request-etag', function () {
         var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
 
         var headersIfNoneMatch;
-        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
 
         var request = new Request({}, { get: getStub });
 
@@ -97,7 +103,10 @@ describe('request-etag', function () {
         var dummyResponse = { statusCode: 200 };
 
         var headersIfNoneMatch;
-        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
 
         var request = new Request({}, { get: getStub });
 
@@ -156,7 +165,10 @@ describe('request-etag', function () {
         var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
 
         var headersIfNoneMatch;
-        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+        var getStub = function (options, callback) {
+          headersIfNoneMatch = options.headers['If-None-Match'];
+          callback(null, dummyResponse, dummyBody);
+        };
 
         var request = new Request({}, { get: getStub });
 
