@@ -6,8 +6,6 @@ Small, in-memory, ETag-based, HTTP-response-caching module. It is based on the t
 - [lru-cache](https://www.npmjs.com/package/lru-cache): a cache object that deletes the least-recently-used items.
 - [request](https://www.npmjs.com/package/request): a simplified HTTP request client. This is used by default, but can be overridden in the `request-etag` constructor.
 
-Request-etag currently only supports GET requests.
-
 
 Usage
 -----
@@ -27,11 +25,11 @@ The `ETagRequest` constructor takes a second optional argument which specifies t
 
 	var eTagRequest = new ETagRequest(cacheConfig, require('request'));
 
-**Note that the signature of the get method of the underlying HTTP request client MUST be the same as that of the get method of the [request](https://www.npmjs.com/package/request) package.**
+**Note that the signature of the underlying HTTP request client function MUST be the same as that of [request](https://www.npmjs.com/package/request) (e.g. [requestretry](https://www.npmjs.com/package/requestretry)).**
 
-The first call GET request will be sent without an `If-None-Match` header, and its response will contain a body.
+The first GET request will be sent without an `If-None-Match` header, and its response will contain a body.
 
-	eTagRequest.get('www.immutablepage.com', function (error, response, body) {
+	eTagRequest('www.immutablepage.com', function (error, response, body) {
 		if (!error && response.statusCode === 200) {
 			console.log('Received 200 - body retrieved from response.');
 			console.log(body);
@@ -49,8 +47,9 @@ Why is my request not cached?
 ----------------------------
 Situations where the request response is not cached include,
 
+- the request is not a GET request,
 - The response has no entity tag in the header,
-- the request is sent with a cookie header,
+- the request is sent with a non-empty cookie header,
 - the response body is bigger than the cache.
 
 
