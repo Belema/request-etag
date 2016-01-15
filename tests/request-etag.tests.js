@@ -26,54 +26,150 @@ describe('request-etag', function () {
   });
 
   describe('instance', function () {
-    it('should invoque callback with same arguments as underlying get returned values, when response statusCode is 200', function (done) {
-      var getBody = 'Body';
-      var getResponse = { statusCode: 200, headers: { etag: '1' } };
-      var getStub = function (options, callback) { callback(null, getResponse, getBody); };
+    describe('get', function () {
+      it('should invoque callback with underlying get returned values, when response statusCode is 200', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
+        var getStub = function (options, callback) { callback(null, dummyResponse, dummyBody); };
 
-      var request = new Request({}, { get: getStub });
-
-      request.get('www.wikipedia.org', function (error, response, body) {
-        (error === null).should.be.true();
-        response.should.equal(getResponse);
-        body.should.equal('Body');
-        done();
-      });
-    });
-
-    it('should invoque callback with body from response, when response statusCode is 200', function (done) {
-      var getBody = 'Body';
-      var getResponse = { statusCode: 200, headers: { etag: '1' } };
-      var getStub = function (options, callback) { callback(null, getResponse, getBody); };
-
-      var request = new Request({}, { get: getStub });
-
-      request.get('www.wikipedia.org', function () {
-        getBody = 'New body';
-        getResponse = { statusCode: 200, headers: { etag: '2' } };
+        var request = new Request({}, { get: getStub });
 
         request.get('www.wikipedia.org', function (error, response, body) {
-          response.should.equal(getResponse);
-          body.should.equal('New body');
+          (error === null).should.be.true();
+          response.should.equal(dummyResponse);
+          body.should.equal('Body');
           done();
+        });
+      });
+
+      it('should handle responses without ETag', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200 };
+        var getStub = function (options, callback) { callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function (error, response, body) {
+          (error === null).should.be.true();
+          response.should.equal(dummyResponse);
+          body.should.equal('Body');
+          done();
+        });
+      });
+
+      it('should not add If-None-Match header when request is not in cache', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
+
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function () {
+          (headersIfNoneMatch === undefined).should.be.true();
+          done();
+        });
+      });
+
+      it('should add If-None-Match header when request is in cache', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
+
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function () {
+          dummyBody = 'New body';
+          dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
+
+          request.get('www.wikipedia.org', function () {
+            headersIfNoneMatch.should.equal('etag1');
+            done();
+          });
+        });
+      });
+
+      it('should not add If-None-Match header to second request when first request does not respond with an ETag', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200 };
+
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function () {
+          dummyBody = 'Body';
+          dummyResponse = { statusCode: 200, headers: { etag: 'etag' } };
+
+          request.get('www.wikipedia.org', function () {
+            (headersIfNoneMatch === undefined).should.be.true();
+            done();
+          });
+        });
+      });
+
+      it('should invoque callback with body from response, when response statusCode is 200', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
+        var getStub = function (options, callback) { callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function () {
+          dummyBody = 'New body';
+          dummyResponse = { statusCode: 200, headers: { etag: '2' } };
+
+          request.get('www.wikipedia.org', function (error, response, body) {
+            response.should.equal(dummyResponse);
+            body.should.equal('New body');
+            done();
+          });
+        });
+      });
+
+      it('should invoque callback with body from cache, when response statusCode is 304', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
+        var getStub = function (options, callback) { callback(null, dummyResponse, dummyBody); };
+
+        var request = new Request({}, { get: getStub });
+
+        request.get('www.wikipedia.org', function () {
+          dummyBody = null;
+          dummyResponse = { statusCode: 304 };
+
+          request.get('www.wikipedia.org', function (error, response, body) {
+            body.should.equal('Body');
+            done();
+          });
         });
       });
     });
 
-    it('should invoque callback with body from cache, when response statusCode is 304', function (done) {
-      var getBody = 'Body';
-      var getResponse = { statusCode: 200, headers: { etag: '1' } };
-      var getStub = function (options, callback) { callback(null, getResponse, getBody); };
+    describe('reset', function () {
+      it('should empty the cache', function (done) {
+        var dummyBody = 'Body';
+        var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
 
-      var request = new Request({}, { get: getStub });
+        var headersIfNoneMatch;
+        var getStub = function (options, callback) { headersIfNoneMatch = options.headers['If-None-Match']; callback(null, dummyResponse, dummyBody); };
 
-      request.get('www.wikipedia.org', function () {
-        getBody = null;
-        getResponse = { statusCode: 304 };
+        var request = new Request({}, { get: getStub });
 
-        request.get('www.wikipedia.org', function (error, response, body) {
-          body.should.equal('Body');
-          done();
+        request.get('www.wikipedia.org', function () {
+          dummyBody = 'New body';
+          dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
+
+          request.reset();
+
+          request.get('www.wikipedia.org', function () {
+            (headersIfNoneMatch === undefined).should.be.true();
+            done();
+          });
         });
       });
     });
