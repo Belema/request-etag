@@ -27,7 +27,7 @@ The `ETagRequest` constructor takes a second optional argument which specifies t
 
 	var eTagRequest = new ETagRequest(cacheConfig, require('request'));
 
-**Note that the signature of the get method of the underlying HTTP request client MUST be the same as that of the get method of the [request](https://www.npmjs.com/package/request) module.**
+**Note that the signature of the get method of the underlying HTTP request client MUST be the same as that of the get method of the [request](https://www.npmjs.com/package/request) package.**
 
 The first call GET request will be sent without an `If-None-Match` header, and its response will contain a body.
 
