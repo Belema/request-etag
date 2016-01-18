@@ -1,6 +1,6 @@
 {
   "name": "request-etag",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Small, ETag-based, HTTP-response-caching module",
   "main": "lib/request-etag.js",
   "scripts": {
