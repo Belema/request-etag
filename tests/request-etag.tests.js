@@ -202,42 +202,61 @@ describe('request-etag', function () {
           done();
         });
       });
+    });
+    it('should handle non-get requests', function (done) {
+      var dummyBody = 'Body';
+      var dummyResponse = { statusCode: 201 };
+      var baseHttpClient = function (options, callback) { callback(null, dummyResponse, dummyBody); };
 
-      it('should handle non-get requests', function (done) {
-        var dummyBody = 'Body';
-        var dummyResponse = { statusCode: 201 };
-        var baseHttpClient = function (options, callback) { callback(null, dummyResponse, dummyBody); };
+      var request = new Request({}, baseHttpClient);
 
-        var request = new Request({}, baseHttpClient);
+      request('www.wikipedia.org', { method: 'post' }, function (error, response, body) {
+        (error === null).should.be.true();
+        response.should.equal(dummyResponse);
+        body.should.equal('Body');
+        done();
+      });
+    });
 
-        request('www.wikipedia.org', { method: 'post' }, function (error, response, body) {
-          (error === null).should.be.true();
-          response.should.equal(dummyResponse);
-          body.should.equal('Body');
+    it('should not cache non-get requests', function (done) {
+      var dummyBody = 'Body';
+      var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
+
+      var ifNoneMatchHeader;
+      var baseHttpClient = function (options, callback) {
+        ifNoneMatchHeader = options.headers && options.headers['If-None-Match'];
+        callback(null, dummyResponse, dummyBody);
+      };
+
+      var request = new Request({}, baseHttpClient);
+
+      request('www.wikipedia.org', { method: 'post' }, function () {
+        dummyBody = 'New body';
+        dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
+
+        request('www.wikipedia.org', { method: 'post' }, function () {
+          (ifNoneMatchHeader === undefined).should.be.true();
           done();
         });
       });
+    });
 
-      it('should not cache non-get requests', function (done) {
-        var dummyBody = 'Body';
-        var dummyResponse = { statusCode: 200, headers: { etag: 'etag1' } };
+    it('should return a copy of the cache content, when response statusCode is 304', function (done) {
+      var originalBody = { dummy: 'body' };
+      var dummyBody = originalBody;
+      var dummyResponse = { statusCode: 200, headers: { etag: '1' } };
+      var baseHttpClient = function (options, callback) { callback(null, dummyResponse, dummyBody); };
 
-        var ifNoneMatchHeader;
-        var baseHttpClient = function (options, callback) {
-          ifNoneMatchHeader = options.headers['If-None-Match'];
-          callback(null, dummyResponse, dummyBody);
-        };
+      var request = new Request({}, baseHttpClient);
 
-        var request = new Request({}, baseHttpClient);
+      request('www.wikipedia.org', function () {
+        dummyBody.dummy = null;
+        dummyResponse = { statusCode: 304 };
 
-        request('www.wikipedia.org', { method: 'post' }, function () {
-          dummyBody = 'New body';
-          dummyResponse = { statusCode: 200, headers: { etag: 'etag2' } };
-
-          request('www.wikipedia.org', { method: 'post' }, function () {
-            (ifNoneMatchHeader === undefined).should.be.true();
-            done();
-          });
+        request('www.wikipedia.org', function (error, response, body) {
+          body.should.not.equal(originalBody);
+          body.should.deepEqual({ dummy: 'body' });
+          done();
         });
       });
     });
