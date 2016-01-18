@@ -12,11 +12,11 @@ Usage
 Configuration,
 
 	var cacheConfig = {
-		max: 10 * 1024 * 1024,
-		length: function (v, k) { return v.length + k.length; }
+		max: 10 * 1024 * 1024
 	};
 
-More details can be found on the cache configuration options on the lru-cache [npm webpage](https://www.npmjs.com/package/lru-cache).
+A default `length` function is injected to the cache object by `request-etag`. It returns the sum of the length of the key, and the length of the value as JSON.
+More details on the cache configuration options can be found on the lru-cache [webpage](https://www.npmjs.com/package/lru-cache).
 
 	var ETagRequest = require('request-etag');
 	var eTagRequest = new ETagRequest(cacheConfig);
